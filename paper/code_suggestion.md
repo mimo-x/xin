@@ -18,24 +18,6 @@ if status == HTTPStatus.UNAUTHORIZED:
     raise Exception("Access denied")
 ```
 
-```go
-// ❌ 神秘错误代码
-if status == 401 {
-    return errors.New("access denied")
-}
-
-// ✅ 命名常量
-const (
-    StatusUnauthorized = 401
-    StatusForbidden    = 403
-    StatusNotFound     = 404
-)
-
-if status == StatusUnauthorized {
-    return errors.New("access denied")
-}
-```
-
 ### 2. 提取复杂逻辑到独立函数
 - 单一职责原则
 - 代码复用性
@@ -61,45 +43,12 @@ def process_user(user):
     return calculate_loan_amount(user) if is_eligible_for_loan(user) else 0
 ```
 
-```go
-// ❌ 复杂逻辑混在一起
-func processUser(user User) float64 {
-    if user.Age >= 18 && user.HasLicense && user.CreditScore > 700 {
-        rate := 0.05
-        if user.CreditScore > 800 {
-            rate = 0.03
-        }
-        return user.Income * 12 * rate
-    }
-    return 0
-}
-
-// ✅ 提取独立函数
-func isEligibleForLoan(user User) bool {
-    return user.Age >= 18 && user.HasLicense && user.CreditScore > 700
-}
-
-func calculateLoanAmount(user User) float64 {
-    rate := 0.05
-    if user.CreditScore > 800 {
-        rate = 0.03
-    }
-    return user.Income * 12 * rate
-}
-
-func processUser(user User) float64 {
-    if isEligibleForLoan(user) {
-        return calculateLoanAmount(user)
-    }
-    return 0
-}
-```
-
 ### 3. 短路求值优化代码流程
 - 提升性能
 - 简化条件判断
 - 线性化代码逻辑
 
+**Python:**
 ```python
 # ❌ 嵌套条件
 def get_username(user):
@@ -130,6 +79,7 @@ def validate_form(form):
             len(form.get('password', '')) >= 8)
 ```
 
+**Go:**
 ```go
 // ❌ 嵌套条件
 func getUsername(user *User) string {
@@ -143,7 +93,7 @@ func getUsername(user *User) string {
     return "Anonymous"
 }
 
-// ✅ 短路求值
+// ✅ 短路求值 - 需要显式nil检查
 func getUsername(user *User) string {
     if user != nil && user.Profile != nil && user.Profile.Name != "" {
         return user.Profile.Name
@@ -180,6 +130,7 @@ func validateForm(form map[string]string) bool {
 - IDE 智能提示
 - 代码文档化
 
+**Python - 动态类型 + 类型注释:**
 ```python
 # ❌ 无类型注释
 def calculate_tax(income, rate):
@@ -217,6 +168,7 @@ def create_user(data: dict) -> UserData:
     )
 ```
 
+**Go - 编译时强类型:**
 ```go
 // ❌ 无类型定义（接口{})
 func calculateTax(income, rate interface{}) interface{} {
@@ -257,11 +209,3 @@ func createUser(data map[string]interface{}) UserData {
     return user
 }
 ```
-
-## 快速开始
-
-每个主题目录包含：
-- `README.md` - 概念解释
-- `examples/` - 代码示例
-- `tips.md` - 实用技巧
-- `pitfalls.md` - 常见陷阱
